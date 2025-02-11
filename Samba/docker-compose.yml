@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  samba:
+    image: dperson/samba
+    container_name: samba_server
+    restart: unless-stopped
+    ports:
+      - "1445:445"
+    environment:
+      - TZ=UTC
+      - USER=username;password
+      - SHARE=readonly_share;/readonly;yes;yes;yes;username
+      - SHARE=writable_share;/writable;yes;no;yes;username
+    volumes:
+      - samba_config:/etc/samba
+      - samba_logs:/var/log/samba
+      - place_read_only_path_here:/readonly  # Read-only share
+      - place_writable_path_here:/writable  # Writable share
+
+volumes:
+  samba_config:
+  samba_logs:

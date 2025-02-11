@@ -1,0 +1,38 @@
+#install ffmpeg
+docker exec -it nextcloud bash
+apt update && apt install ffmpeg -y
+
+#open config.php - make sure visit port 8080 first to setup username and password to generate the config.php file
+docker exec -it nextcloud bash
+nano /var/www/html/config/config.php
+
+#attach this in the config file
+'enable_previews' => true,
+'enabledPreviewProviders' => array (
+    'OC\\Preview\\Movie',
+    'OC\\Preview\\MP4',
+    'OC\\Preview\\AVI',
+    'OC\\Preview\\MKV',
+    'OC\\Preview\\MP3',
+    'OC\\Preview\\JPEG',
+    'OC\\Preview\\PNG',
+    'OC\\Preview\\GIF',
+),
+
+#exit interactive mode and restart nextcloud
+docker restart nextcloud
+
+#install app preview for video preview
+Go to Nextcloud Web UI (http://your-nextcloud-ip:8080).
+Login as Admin.
+Navigate to Apps → Search for "Preview Generator".
+Click Install & Enable.
+
+#repair if necessary
+docker exec -it nextcloud bash
+su -s /bin/bash www-data -c 'php occ preview:repair'
+
+#try to generate all preview images existed before the config above
+docker exec -it nextcloud bash
+su -s /bin/bash www-data -c 'php occ preview:generate-all'
+
